@@ -171,7 +171,7 @@ with tab_analisis:
                         f"{df_res['indice_fenomeno_corruptivo'].mean():.1f}",
                     )
                     col_res2.write("Visualice el detalle completo en la pestaña 'Monitor Histórico'.")
-                    st.dataframe(df_res, use_container_width=True, hide_index=True)
+                    st.dataframe(df_res, width="stretch", hide_index=True)
                 else:
                     st.error("No se pudieron obtener datos del portal. Verifique la conexión.")
             except Exception as e:
