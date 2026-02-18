@@ -12,7 +12,13 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
-
+# Configuración para instalación en celular (PWA)
+st.markdown(
+    """
+    <link rel="manifest" href="./manifest.json">
+    """,
+    unsafe_allow_html=True
+)
 st.markdown(
     """
     <style>
