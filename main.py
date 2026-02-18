@@ -114,7 +114,7 @@ with tab_monitor:
                     m3.metric("Alertas de Riesgo Alto", riesgo_alto, delta_color="inverse")
 
             st.write("### Detalle del Análisis Algorítmico")
-            st.dataframe(df, use_container_width=True, hide_index=True)
+            st.dataframe(df, width="stretch", hide_index=True)
 
             st.divider()
             col_g, col_m = st.columns([1, 2])
