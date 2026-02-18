@@ -17,7 +17,7 @@ warnings.filterwarnings("ignore", message="Unverified HTTPS request")
 # ==========================================
 # CONFIGURACIÓN DE RUTAS CON ARCHIVADO MENSUAL
 # ==========================================
-DATA_DIR = "data"
+DATA_DIR = os.path.join(os.getcwd(), "data")
 
 def obtener_directorio_mes_actual():
     ahora = datetime.now()
