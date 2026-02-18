@@ -3,9 +3,10 @@ import os
 import unicodedata
 from datetime import datetime
 
-# En Railway, la raíz suele ser /app
+# Cambia esto en analisis.py y dashboard.py
+# Ahora la carpeta 'data' está directamente en la raíz
 BASE_PATH = os.getcwd()
-DATA_DIR = os.path.join(BASE_PATH, "gob_docker", "data")
+DATA_DIR = os.path.join(os.getcwd(), "data")
 
 if not os.path.exists(DATA_DIR):
     os.makedirs(DATA_DIR, exist_ok=True)
