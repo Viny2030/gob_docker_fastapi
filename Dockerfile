@@ -12,7 +12,8 @@ COPY . .
 RUN mkdir -p /app/gob_docker/data
 
 # EXPOSE es informativo, Railway usa el puerto dinámico
+# ... resto del Dockerfile igual ...
 EXPOSE 8501
 
-# CAMBIO CLAVE: Usamos el puerto que Railway nos asigne mediante la variable de entorno PORT
+# Comando corregido para puerto dinámico
 CMD ["sh", "-c", "streamlit run main.py --server.port=${PORT:-8501} --server.address=0.0.0.0 --server.enableStaticServing=true"]
