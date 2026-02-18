@@ -1,22 +1,21 @@
-# En analisis.py
 import os
 import unicodedata
+import pandas as pd
 from datetime import datetime
 
-# Cambia esto en analisis.py y dashboard.py
-# Ahora la carpeta 'data' está directamente en la raíz
+# --- CONFIGURACIÓN DE RUTAS DINÁMICAS ---
+# Detecta la raíz del proyecto para que funcione en Docker/Railway y Local
 BASE_PATH = os.getcwd()
-DATA_DIR = os.path.join(os.getcwd(), "data")
+DATA_DIR = os.path.join(BASE_PATH, "data")
 
+# Asegura que la carpeta 'data' exista para evitar errores de guardado
 if not os.path.exists(DATA_DIR):
-    os.makedirs(DATA_DIR, exist_ok=True)
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+    except Exception as e:
+        print(f"⚠️ No se pudo crear DATA_DIR: {e}")
 
-# Crea la estructura jerárquica si no existe
-if not os.path.exists(DATA_DIR):
-    os.makedirs(DATA_DIR, exist_ok=True)
-    print(f"📁 Directorio de datos preparado en: {DATA_DIR}")
-
-# MATRIZ TEÓRICA - Ph.D. Vicente Humberto Monteverde
+# --- MATRIZ TEÓRICA - Ph.D. Vicente Humberto Monteverde ---
 MATRIZ_TEORICA = {
     "Privatización / Concesión": {
         "keywords": ["concesion", "privatizacion", "venta de pliegos", "subvaluacion"],
@@ -56,109 +55,70 @@ MATRIZ_TEORICA = {
 }
 
 def limpiar_texto_curado(texto):
-    """Limpia y normaliza texto para análisis"""
+    """Normaliza texto eliminando acentos y convirtiendo a minúsculas"""
     if not isinstance(texto, str):
         return ""
     texto = texto.lower()
-    # Remover acentos
     return "".join(
         c for c in unicodedata.normalize("NFD", texto)
         if unicodedata.category(c) != "Mn"
     )
 
 def evaluar_riesgo(score):
-    """Clasifica el riesgo según el índice"""
-    if score >= 8:
-        return "Alto"
-    elif score >= 5:
-        return "Medio"
-    else:
-        return "Bajo"
+    """Clasifica el nivel de riesgo según el peso de la matriz"""
+    if score >= 8: return "Alto"
+    if score >= 5: return "Medio"
+    return "Bajo"
 
 def analizar_boletin(df, directorio_destino=None):
     """
-    Analiza licitaciones aplicando la matriz teórica de Monteverde
-    
-    Args:
-        df: DataFrame con las licitaciones
-        directorio_destino: Carpeta donde guardar el reporte (opcional)
-    
-    Returns:
-        tuple: (df_analizado, path_excel, df_vacio)
+    Aplica la matriz de Monteverde y guarda el reporte resultante.
     """
-    if df.empty:
-        print("⚠️ DataFrame vacío recibido")
-        return df, None, pd.DataFrame()
+    if df is None or df.empty:
+        return pd.DataFrame(), None, pd.DataFrame()
     
-    # Copiar para no modificar el original
     df = df.copy()
     
-    # Limpiar texto para análisis
+    # 1. Limpieza y preparación
     df["texto_clean"] = df["detalle"].apply(limpiar_texto_curado)
-    
-    # Inicializar columnas
     df["tipo_decision"] = "No identificado"
     df["transferencia"] = "No identificado"
     df["indice_fenomeno_corruptivo"] = 0.0
 
-    # Aplicar matriz teórica
+    # 2. Aplicación de la Matriz Teórica
     for categoria, info in MATRIZ_TEORICA.items():
-        # Crear pattern de búsqueda
         pattern = "|".join(info["keywords"])
         mask = df["texto_clean"].str.contains(pattern, na=False, regex=True)
         
-        # Asignar valores
         df.loc[mask, "tipo_decision"] = categoria
         df.loc[mask, "transferencia"] = info["transferencia"]
         df.loc[mask, "indice_fenomeno_corruptivo"] = info["peso"]
 
-    # Clasificar nivel de riesgo
     df["nivel_riesgo_teorico"] = df["indice_fenomeno_corruptivo"].apply(evaluar_riesgo)
     
-    # Determinar directorio de guardado
-    if directorio_destino and os.path.exists(directorio_destino):
-        save_dir = directorio_destino
-    else:
-        save_dir = DATA_DIR
+    # 3. Gestión de guardado de archivos
+    save_dir = directorio_destino if (directorio_destino and os.path.exists(directorio_destino)) else DATA_DIR
     
-    # Generar nombre de archivo con timestamp
     fecha_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-    nombre_archivo = f"reporte_fenomenos_{fecha_str}.xlsx"
-    path_excel = os.path.join(save_dir, nombre_archivo)
+    nombre_base = f"reporte_fenomenos_{fecha_str}"
+    path_excel = os.path.join(save_dir, f"{nombre_base}.xlsx")
     
-    # Guardar Excel
     try:
-        # Seleccionar columnas importantes para el reporte
-        columnas_reporte = [
-            'fecha', 'nro_proceso', 'detalle', 'tipo_proceso', 
-            'fecha_apertura', 'tipo_decision', 'transferencia',
-            'indice_fenomeno_corruptivo', 'nivel_riesgo_teorico', 'link'
-        ]
+        # Columnas deseadas para el reporte final
+        cols = ['fecha', 'nro_proceso', 'detalle', 'tipo_proceso', 'tipo_decision', 
+                'transferencia', 'indice_fenomeno_corruptivo', 'nivel_riesgo_teorico', 'link']
         
-        # Filtrar solo columnas que existen
-        columnas_existentes = [col for col in columnas_reporte if col in df.columns]
-        df_exportar = df[columnas_existentes]
+        # Filtrar solo las columnas que realmente existen en el DF
+        df_export = df[[c for c in cols if c in df.columns]]
         
-        # Exportar con formato
-        with pd.ExcelWriter(path_excel, engine='openpyxl') as writer:
-            df_exportar.to_excel(writer, sheet_name='Analisis', index=False)
-            
-            # Ajustar ancho de columnas
-            worksheet = writer.sheets['Analisis']
-            for idx, col in enumerate(df_exportar.columns, 1):
-                max_length = max(
-                    df_exportar[col].astype(str).apply(len).max(),
-                    len(col)
-                )
-                worksheet.column_dimensions[chr(64 + idx)].width = min(max_length + 2, 50)
-        
-        print(f"✅ Reporte guardado: {path_excel}")
+        # Guardar Excel con motor openpyxl
+        df_export.to_excel(path_excel, index=False, engine='openpyxl')
+        print(f"✅ Reporte generado exitosamente: {path_excel}")
         
     except Exception as e:
-        print(f"❌ Error al guardar Excel: {e}")
-        # Fallback: guardar CSV
-        path_excel = path_excel.replace('.xlsx', '.csv')
+        print(f"❌ Error al guardar Excel: {e}. Intentando CSV...")
+        path_excel = os.path.join(save_dir, f"{nombre_base}.csv")
         df.to_csv(path_excel, index=False)
-        print(f"⚠️ Guardado como CSV alternativo: {path_excel}")
     
+    # Retornar el DataFrame analizado, la ruta del archivo y un DF vacío para compatibilidad con main.py
     return df, path_excel, pd.DataFrame()
