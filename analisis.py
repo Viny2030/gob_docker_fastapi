@@ -1,12 +1,16 @@
 import pandas as pd
 import os
-import unicodedata
+import unicodedata  # <--- ESTA LÍNEA ES LA QUE FALTA O ESTÁ MAL UBICADA
 from datetime import datetime
+# Directorio de datos unificado para gob_docker/data
+# Detecta si está en Docker (/app) o local para construir la ruta correcta
+BASE_PATH = "/app" if os.path.exists("/app") else os.getcwd()
+DATA_DIR = os.path.join(BASE_PATH, "gob_docker", "data")
 
-# Directorio de datos compatible con Docker y local
-DATA_DIR = "/app/data" if os.path.exists("/app") else os.path.join(os.getcwd(), "data")
+# Crea la estructura jerárquica si no existe
 if not os.path.exists(DATA_DIR):
-    os.makedirs(DATA_DIR)
+    os.makedirs(DATA_DIR, exist_ok=True)
+    print(f"📁 Directorio de datos preparado en: {DATA_DIR}")
 
 # MATRIZ TEÓRICA - Ph.D. Vicente Humberto Monteverde
 MATRIZ_TEORICA = {

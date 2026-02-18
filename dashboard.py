@@ -10,7 +10,8 @@ from datetime import datetime
 st.set_page_config(page_title="Monitor de Gran Corrupción", layout="wide")
 
 # Rutas compatibles con Docker y Local
-DATA_DIR = "/app/data" if os.path.exists("/app/data") else "data"
+# En dashboard.py
+DATA_DIR = "/app/gob_docker/data" if os.path.exists("/app") else "gob_docker/data"
 
 
 # ===============================
