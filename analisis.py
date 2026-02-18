@@ -1,11 +1,14 @@
-import pandas as pd
+# En analisis.py
 import os
-import unicodedata  # <--- ESTA LÍNEA ES LA QUE FALTA O ESTÁ MAL UBICADA
+import unicodedata
 from datetime import datetime
-# Directorio de datos unificado para gob_docker/data
-# Detecta si está en Docker (/app) o local para construir la ruta correcta
-BASE_PATH = "/app" if os.path.exists("/app") else os.getcwd()
+
+# En Railway, la raíz suele ser /app
+BASE_PATH = os.getcwd()
 DATA_DIR = os.path.join(BASE_PATH, "gob_docker", "data")
+
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR, exist_ok=True)
 
 # Crea la estructura jerárquica si no existe
 if not os.path.exists(DATA_DIR):
