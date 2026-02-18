@@ -1,0 +1,196 @@
+# 🐳 Guía de Uso - Docker Compose con Scraper
+
+## 📋 Comandos principales
+
+### **Iniciar solo el dashboard (uso normal):**
+```powershell
+docker-compose up -d
+```
+- Inicia el dashboard en http://localhost:8501
+- El scraper NO se ejecuta automáticamente
+
+### **Ejecutar el scraper (cuando necesites generar reportes):**
+```powershell
+docker-compose run --rm scraper
+```
+- Ejecuta `diario.py` una sola vez
+- Genera el reporte del día
+- Se guarda en `data/YYYY-MM/`
+- El contenedor se elimina automáticamente al terminar (`--rm`)
+
+### **Ver logs del scraper mientras corre:**
+```powershell
+docker-compose run scraper
+# (sin --rm para ver los logs completos)
+```
+
+### **Detener todo:**
+```powershell
+docker-compose down
+```
+
+---
+
+## 🔄 Flujo de trabajo diario
+
+### **Opción A: Ejecutar manualmente cuando quieras**
+```powershell
+# Por la mañana, ejecutas:
+docker-compose run --rm scraper
+
+# El dashboard sigue corriendo, solo refresca la página para ver los nuevos datos
+```
+
+### **Opción B: Automatizar con Task Scheduler (Windows)**
+
+1. Abrir "Programador de tareas" (Task Scheduler)
+2. Crear tarea básica
+3. Nombre: "Monitor Scraper Diario"
+4. Disparador: Diariamente a las 9:00 AM
+5. Acción: Iniciar un programa
+   - Programa: `powershell.exe`
+   - Argumentos: `-Command "cd C:\Users\ASUS\PycharmProjects\integracion-comprar-gob-NUEVO; docker-compose run --rm scraper"`
+
+---
+
+## 📊 Estructura después de la migración
+
+```
+proyecto/
+├── docker-compose.yml          ← NUEVO (reemplazar)
+├── Dockerfile                  (sin cambios)
+├── diario.py                   ← NUEVO (reemplazar)
+├── dashboard.py                ← NUEVO (reemplazar)
+├── analisis.py                 (sin cambios)
+└── data/
+    ├── 2026-01/               ← Crear este fin de semana
+    │   └── reporte_fenomenos_202601*.xlsx
+    └── 2026-02/               ← Se creará automáticamente el lunes
+        └── (reportes de febrero)
+```
+
+---
+
+## 🚀 Pasos de implementación este fin de semana
+
+### **1. Backup:**
+```powershell
+# Hacer copia de seguridad
+xcopy data data_backup\ /E /I
+```
+
+### **2. Migrar enero:**
+```powershell
+# Crear carpeta
+mkdir data\2026-01
+
+# Mover reportes de enero
+move data\reporte_fenomenos_202601*.xlsx data\2026-01\
+```
+
+### **3. Actualizar archivos:**
+- Reemplazar `docker-compose.yml`
+- Reemplazar `diario.py`
+- Reemplazar `dashboard.py`
+
+### **4. Reconstruir contenedores:**
+```powershell
+# Detener todo
+docker-compose down
+
+# Eliminar contenedor viejo (opcional, para limpieza)
+docker rm monitor_integracion
+
+# Reconstruir con nueva configuración
+docker-compose build
+
+# Iniciar dashboard
+docker-compose up -d
+```
+
+### **5. Verificar dashboard:**
+- Abrir http://localhost:8501
+- Verificar que aparece selector de mes
+- Verificar que puedes ver reportes de enero
+
+### **6. Probar el scraper:**
+```powershell
+# Ejecutar una prueba
+docker-compose run --rm scraper
+
+# Verificar que funcionó
+ls data\2026-01\
+```
+
+---
+
+## ✅ Ventajas de esta configuración
+
+✅ **Dashboard siempre disponible** - Corre 24/7
+✅ **Scraper bajo demanda** - Solo cuando lo necesitas
+✅ **Sin conflictos** - Servicios separados
+✅ **Fácil de automatizar** - Con Task Scheduler
+✅ **Logs claros** - Cada servicio tiene sus propios logs
+✅ **Ahorro de recursos** - El scraper solo corre cuando es necesario
+
+---
+
+## 🔍 Troubleshooting
+
+### **Error: "no configuration file provided"**
+Verifica que estás en la carpeta correcta:
+```powershell
+cd C:\Users\ASUS\PycharmProjects\integracion-comprar-gob-NUEVO
+docker-compose up -d
+```
+
+### **Dashboard no muestra nuevos datos**
+Refresca el navegador (Ctrl + F5)
+
+### **Scraper no genera reporte**
+Ver logs:
+```powershell
+docker-compose run scraper
+# (sin --rm para ver todos los logs)
+```
+
+### **Volumen no monta correctamente**
+Verificar permisos de la carpeta `data/`:
+```powershell
+icacls data /grant Everyone:F
+```
+
+---
+
+## 📅 A partir del lunes 3 de febrero
+
+### **Ejecutar diariamente:**
+```powershell
+docker-compose run --rm scraper
+```
+
+### **O automatizar con Task Scheduler** (recomendado)
+
+### **El dashboard se actualiza automáticamente**
+Solo refrescar la página en el navegador
+
+---
+
+## 🎓 Comandos útiles adicionales
+
+```powershell
+# Ver logs del dashboard
+docker-compose logs -f dashboard
+
+# Ver todos los contenedores
+docker-compose ps
+
+# Reiniciar solo el dashboard
+docker-compose restart dashboard
+
+# Reconstruir sin usar caché
+docker-compose build --no-cache
+
+# Eliminar todo (contenedores, redes, volúmenes)
+docker-compose down -v
+```
