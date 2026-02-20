@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+alembic
+psycopg2-binary
+pandas
+httpx
+python-jose
+passlib
+python-dotenv
