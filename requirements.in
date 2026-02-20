@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+gunicorn
+jinja2
+python-multipart
+python-dotenv
+sqlalchemy
+psycopg2-binary
+python-jose[cryptography]
+passlib[bcrypt]
+fastapi-mail
+redis
+slowapi
