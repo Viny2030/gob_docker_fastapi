@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación - Monitor XAI</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>⚖️ Monitor de Fenómenos Corruptivos</h1>
+        <p>Algoritmos contra la Corrupción - Ph.D. Vicente Humberto Monteverde</p>
+        <nav>
+            <a href="/">📊 Dashboard</a>
+            <a href="/analisis-vivo">🚀 Análisis en Vivo</a>
+            <a href="/documentacion" class="active">📖 Documentación</a>
+            <a href="/docs">🔧 API</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="doc-section">
+            <h2>📖 Guía de Uso del Monitor XAI</h2>
+
+            <div class="doc-grid">
+                <div class="doc-card">
+                    <h3>🚀 Operación del Sistema</h3>
+                    <ol>
+                        <li>Vaya a <strong>Análisis en Vivo</strong> y pulse 🚀</li>
+                        <li>En <strong>Dashboard</strong> visualice los resultados</li>
+                        <li>Ordene por Índice para identificar casos críticos</li>
+                    </ol>
+                </div>
+                <div class="doc-card">
+                    <h3>🔍 Interpretación de Riesgo</h3>
+                    <ul>
+                        <li><strong>Índice (0-10):</strong> Nivel de discrecionalidad detectado</li>
+                        <li>🔴 <strong>Alto (8-10):</strong> Requiere auditoría inmediata</li>
+                        <li>🟡 <strong>Medio (5-7):</strong> Requiere revisión</li>
+                        <li>🔵 <strong>Bajo (0-4):</strong> Estándares normales</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="doc-section">
+            <h2>🔬 Los 7 Escenarios de la Matriz XAI</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Escenario</th>
+                        <th>Mecanismo de Transferencia</th>
+                        <th>Peso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in escenarios %}
+                    <tr>
+                        <td>{{ e.nombre }}</td>
+                        <td>{{ e.transferencia }}</td>
+                        <td><strong>{{ e.peso }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="doc-section referencia">
+            <h2>📄 Fundamentación Académica</h2>
+            <p>Esta herramienta implementa la investigación del <strong>Ph.D. Vicente Humberto Monteverde</strong> sobre la <strong>Transferencia Regresiva de Ingresos</strong>.</p>
+            <p><strong>Referencia:</strong> Monteverde, V.H. (2021). "Great corruption - theory of corrupt phenomena", <em>Journal of Financial Crime</em>, Vol. 28 No. 2, pp. 580-592.</p>
+            <p><strong>DOI:</strong> <a href="https://doi.org/10.1108/JFC-03-2020-0054" target="_blank">10.1108/JFC-03-2020-0054</a></p>
+            <br>
+            <a href="/api/descargar-articulo" class="btn-descarga">📥 Descargar Artículo Original (Ph.D. Monteverde)</a>
+        </section>
+    </main>
+</body>
+</html>

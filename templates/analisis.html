@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis en Vivo - Monitor XAI</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>⚖️ Monitor de Fenómenos Corruptivos</h1>
+        <p>Algoritmos contra la Corrupción - Ph.D. Vicente Humberto Monteverde</p>
+        <nav>
+            <a href="/">📊 Dashboard</a>
+            <a href="/analisis-vivo" class="active">🚀 Análisis en Vivo</a>
+            <a href="/documentacion">📖 Documentación</a>
+            <a href="/docs">🔧 API</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="analisis-vivo">
+            <h2>🔗 Conexión Directa: Comprar.gob.ar</h2>
+            <p class="info">
+                Este proceso ejecuta el scraper sobre el portal de compras públicas
+                y aplica la matriz XAI de detección de fenómenos corruptivos.
+            </p>
+            <p class="info-aviso">
+                ⚠️ <strong>Nota:</strong> El análisis puede tardar entre 30 y 90 segundos
+                dependiendo de la disponibilidad del portal. Los resultados quedan
+                disponibles en el Dashboard durante esta sesión.
+            </p>
+
+            <button id="btnAnalisis" onclick="ejecutarAnalisis()">
+                🚀 Iniciar Ciclo de Análisis Completo
+            </button>
+
+            <div id="spinner" class="spinner" style="display:none;">
+                <div class="loader"></div>
+                <p>Ejecutando Paso 1-2-3 (Scraping + Matriz + Relación)...</p>
+                <p class="tiempo-estimado">Tiempo estimado: 30-90 segundos</p>
+            </div>
+
+            <div id="resultado" style="display:none;"></div>
+        </section>
+    </main>
+
+    <script>
+        async function ejecutarAnalisis() {
+            const btn = document.getElementById('btnAnalisis');
+            const spinner = document.getElementById('spinner');
+            const resultado = document.getElementById('resultado');
+
+            btn.disabled = true;
+            spinner.style.display = 'block';
+            resultado.style.display = 'none';
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 min timeout
+
+                const resp = await fetch('/api/analisis', {
+                    method: 'POST',
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+                const data = await resp.json();
+
+                if (resp.ok) {
+                    resultado.innerHTML = `
+                        <div class="exito">
+                            <h3>✅ Análisis completado exitosamente</h3>
+                            <div class="metricas">
+                                <div class="card">
+                                    <h3>Procesos Analizados</h3>
+                                    <span class="numero">${data.total_procesos}</span>
+                                </div>
+                                <div class="card">
+                                    <h3>Índice Promedio</h3>
+                                    <span class="numero">${data.indice_promedio} / 10</span>
+                                </div>
+                            </div>
+                            <p>📁 Reporte guardado: <strong>${data.reporte}</strong></p>
+                            <p><a href="/">📊 Ver resultados en el Dashboard →</a></p>
+                        </div>`;
+                } else {
+                    const detalle = data.detail || 'Error desconocido';
+                    resultado.innerHTML = `
+                        <div class="error">
+                            <h3>❌ Error en el análisis</h3>
+                            <p>${detalle}</p>
+                            ${detalle.includes('comprar.gob.ar') ? `
+                            <p>💡 <strong>Sugerencia:</strong> El portal comprar.gob.ar puede no estar
+                            accesible desde Railway. Intente nuevamente en unos minutos o
+                            ejecute el análisis en su entorno local.</p>` : ''}
+                        </div>`;
+                }
+            } catch (e) {
+                let mensaje = e.message;
+                if (e.name === 'AbortError') {
+                    mensaje = 'Tiempo de espera agotado (2 minutos). El scraping tardó demasiado.';
+                }
+                resultado.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Error de conexión</h3>
+                        <p>${mensaje}</p>
+                    </div>`;
+            }
+
+            spinner.style.display = 'none';
+            resultado.style.display = 'block';
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
