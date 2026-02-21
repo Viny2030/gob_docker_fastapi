@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor XAI - Ph.D. Monteverde</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>⚖️ Monitor de Fenómenos Corruptivos</h1>
+        <p>Algoritmos contra la Corrupción - Ph.D. Vicente Humberto Monteverde</p>
+        <nav>
+            <a href="/" class="active">📊 Dashboard</a>
+            <a href="/analisis-vivo">🚀 Análisis en Vivo</a>
+            <a href="/documentacion">📖 Documentación</a>
+            <a href="/docs">🔧 API</a>
+        </nav>
+    </header>
+
+    <main>
+        {% if sin_datos %}
+        <section class="aviso-sin-datos">
+            <div class="aviso-box">
+                <h2>📭 Sin datos disponibles</h2>
+                <p>No hay reportes cargados todavía. Para ver datos en el dashboard:</p>
+                <ol>
+                    <li>Ir a <a href="/analisis-vivo">🚀 Análisis en Vivo</a></li>
+                    <li>Hacer clic en <strong>"Iniciar Ciclo de Análisis Completo"</strong></li>
+                    <li>Volver a este dashboard</li>
+                </ol>
+                <a href="/analisis-vivo" class="btn-analisis">🚀 Ir a Análisis en Vivo</a>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- MÉTRICAS -->
+        <section class="metricas">
+            <div class="card">
+                <h3>Procesos Analizados</h3>
+                <span class="numero">{{ total }}</span>
+            </div>
+            <div class="card">
+                <h3>Intensidad Promedio</h3>
+                <span class="numero">{{ indice_prom }} / 10</span>
+            </div>
+            <div class="card alerta">
+                <h3>Alertas Alto Riesgo</h3>
+                <span class="numero">{{ alto_riesgo }}</span>
+            </div>
+            <div class="card">
+                <h3>Total Reportes</h3>
+                <span class="numero">{{ total_reportes }}</span>
+            </div>
+        </section>
+
+        <!-- ÚLTIMO REPORTE -->
+        <section class="info-reporte">
+            <p>📁 Último reporte: <strong>{{ ultimo_reporte }}</strong></p>
+        </section>
+
+        {% if not sin_datos %}
+        <!-- GRÁFICOS -->
+        <section class="graficos">
+            <div class="grafico-container">
+                <h3>Distribución por Tipo de Fenómeno</h3>
+                <canvas id="graficoTipos"></canvas>
+            </div>
+            <div class="grafico-container">
+                <h3>Nivel de Riesgo</h3>
+                <canvas id="graficoRiesgo"></canvas>
+            </div>
+        </section>
+
+        <!-- TABLA -->
+        <section class="tabla-container">
+            <h3>Detalle del Análisis Algorítmico</h3>
+            {% if tabla %}
+            <div class="tabla-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nro Proceso</th>
+                            <th>Detalle</th>
+                            <th>Tipo Decisión</th>
+                            <th>Índice</th>
+                            <th>Riesgo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in tabla %}
+                        <tr class="riesgo-{{ row.get('nivel_riesgo_teorico', 'bajo')|lower }}">
+                            <td>{{ row.get('nro_proceso', 'n/a') }}</td>
+                            <td class="detalle-col">{{ row.get('detalle', 'n/a') }}</td>
+                            <td>{{ row.get('tipo_decision', 'n/a') }}</td>
+                            <td><strong>{{ row.get('indice_fenomeno_corruptivo', 0) }}</strong></td>
+                            <td>
+                                {% set riesgo = row.get('nivel_riesgo_teorico', 'Bajo') %}
+                                {% if riesgo == 'Alto' %}🔴{% elif riesgo == 'Medio' %}🟡{% else %}🔵{% endif %}
+                                {{ riesgo }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="sin-datos">No hay reportes disponibles. Ejecute un análisis en vivo.</p>
+            {% endif %}
+        </section>
+        {% endif %}
+    </main>
+
+    {% if not sin_datos %}
+    <script>
+        // Gráfico de tipos
+        const tipoData = {{ tipo_counts | tojson }};
+        if (Object.keys(tipoData).length > 0) {
+            new Chart(document.getElementById('graficoTipos'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(tipoData),
+                    datasets: [{
+                        label: 'Cantidad',
+                        data: Object.values(tipoData),
+                        backgroundColor: ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2'],
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+        }
+
+        // Gráfico de riesgo
+        const riesgoData = {{ riesgo_counts | tojson }};
+        if (Object.keys(riesgoData).length > 0) {
+            new Chart(document.getElementById('graficoRiesgo'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(riesgoData),
+                    datasets: [{
+                        data: Object.values(riesgoData),
+                        backgroundColor: ['#d62728', '#ff7f0e', '#1f77b4'],
+                    }]
+                },
+                options: { responsive: true }
+            });
+        }
+    </script>
+    {% endif %}
+</body>
+</html>
