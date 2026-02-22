@@ -1,31 +1,15 @@
-# He eliminado la línea 'version' porque ya no es necesaria en Docker moderno
 services:
-  # Servicio del Dashboard (siempre activo)
   dashboard:
     build: .
     container_name: monitor_dashboard
     ports:
-      - "8501:8501"
+      - "8000:8000"
     volumes:
       - ./data:/app/data
-    command: streamlit run dashboard.py --server.address=0.0.0.0
-    restart: always  # Cambiado a 'always' para que inicie solo al prender la PC
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    restart: always
     networks:
       - monitor_network
-
-  # Servicio del Scraper (ejecutar manualmente cuando necesites)
-  scraper:
-    build: .
-    container_name: monitor_scraper
-    volumes:
-      - ./data:/app/data
-    command: python diario.py
-    depends_on:
-      - dashboard
-    networks:
-      - monitor_network
-    profiles:
-      - scraper
 
 networks:
   monitor_network:
