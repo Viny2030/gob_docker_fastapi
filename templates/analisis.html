@@ -8,14 +8,18 @@
 </head>
 <body>
     <header>
-        <h1>⚖️ Monitor de Fenómenos Corruptivos</h1>
-        <p>Algoritmos contra la Corrupción - Ph.D. Vicente Humberto Monteverde</p>
-        <nav>
-            <a href="/">📊 Dashboard</a>
-            <a href="/analisis-vivo" class="active">🚀 Análisis en Vivo</a>
-            <a href="/documentacion">📖 Documentación</a>
-            <a href="/docs">🔧 API</a>
-        </nav>
+        <div class="header-inner">
+            <div class="header-brand">
+                <h1>⚖️ Monitor XAI <span class="badge">v1.0</span></h1>
+                <p>Ph.D. Vicente Humberto Monteverde · Algoritmos contra la Corrupción</p>
+            </div>
+            <nav>
+                <a href="/">📊 Dashboard</a>
+                <a href="/analisis-vivo" class="active">🚀 Análisis en Vivo</a>
+                <a href="/documentacion">📖 Documentación</a>
+                <a href="/docs">🔧 API</a>
+            </nav>
+        </div>
     </header>
 
     <main>
@@ -38,7 +42,7 @@
             <div id="spinner" class="spinner" style="display:none;">
                 <div class="loader"></div>
                 <p>Ejecutando Paso 1-2-3 (Scraping + Matriz + Relación)...</p>
-                <p class="tiempo-estimado">Tiempo estimado: 30-90 segundos</p>
+                <p class="tiempo-estimado">Tiempo estimado: 30–90 segundos</p>
             </div>
 
             <div id="resultado" style="display:none;"></div>
@@ -57,7 +61,7 @@
 
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 min timeout
+                const timeoutId = setTimeout(() => controller.abort(), 120000);
 
                 const resp = await fetch('/api/analisis', {
                     method: 'POST',
@@ -71,18 +75,18 @@
                     resultado.innerHTML = `
                         <div class="exito">
                             <h3>✅ Análisis completado exitosamente</h3>
-                            <div class="metricas">
+                            <div class="metricas" style="margin-top:16px;margin-bottom:16px">
                                 <div class="card">
                                     <h3>Procesos Analizados</h3>
                                     <span class="numero">${data.total_procesos}</span>
                                 </div>
                                 <div class="card">
                                     <h3>Índice Promedio</h3>
-                                    <span class="numero">${data.indice_promedio} / 10</span>
+                                    <span class="numero">${data.indice_promedio}<small style="font-size:1rem;color:var(--text-muted)">/10</small></span>
                                 </div>
                             </div>
-                            <p>📁 Reporte guardado: <strong>${data.reporte}</strong></p>
-                            <p><a href="/">📊 Ver resultados en el Dashboard →</a></p>
+                            <p>📁 Reporte guardado: <strong style="color:var(--accent-cyan)">${data.reporte}</strong></p>
+                            <p style="margin-top:12px"><a href="/">📊 Ver resultados en el Dashboard →</a></p>
                         </div>`;
                 } else {
                     const detalle = data.detail || 'Error desconocido';
@@ -91,7 +95,7 @@
                             <h3>❌ Error en el análisis</h3>
                             <p>${detalle}</p>
                             ${detalle.includes('comprar.gob.ar') ? `
-                            <p>💡 <strong>Sugerencia:</strong> El portal comprar.gob.ar puede no estar
+                            <p style="margin-top:10px">💡 <strong>Sugerencia:</strong> El portal comprar.gob.ar puede no estar
                             accesible desde Railway. Intente nuevamente en unos minutos o
                             ejecute el análisis en su entorno local.</p>` : ''}
                         </div>`;

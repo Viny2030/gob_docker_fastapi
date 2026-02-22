@@ -9,14 +9,18 @@
 </head>
 <body>
     <header>
-        <h1>⚖️ Monitor de Fenómenos Corruptivos</h1>
-        <p>Algoritmos contra la Corrupción - Ph.D. Vicente Humberto Monteverde</p>
-        <nav>
-            <a href="/" class="active">📊 Dashboard</a>
-            <a href="/analisis-vivo">🚀 Análisis en Vivo</a>
-            <a href="/documentacion">📖 Documentación</a>
-            <a href="/docs">🔧 API</a>
-        </nav>
+        <div class="header-inner">
+            <div class="header-brand">
+                <h1>⚖️ Monitor XAI <span class="badge">v1.0</span></h1>
+                <p>Ph.D. Vicente Humberto Monteverde · Algoritmos contra la Corrupción</p>
+            </div>
+            <nav>
+                <a href="/" class="active">📊 Dashboard</a>
+                <a href="/analisis-vivo">🚀 Análisis en Vivo</a>
+                <a href="/documentacion">📖 Documentación</a>
+                <a href="/docs">🔧 API</a>
+            </nav>
+        </div>
     </header>
 
     <main>
@@ -26,7 +30,7 @@
                 <h2>📭 Sin datos disponibles</h2>
                 <p>No hay reportes cargados todavía. Para ver datos en el dashboard:</p>
                 <ol>
-                    <li>Ir a <a href="/analisis-vivo">🚀 Análisis en Vivo</a></li>
+                    <li>Ir a <a href="/analisis-vivo" style="color:var(--accent-cyan)">🚀 Análisis en Vivo</a></li>
                     <li>Hacer clic en <strong>"Iniciar Ciclo de Análisis Completo"</strong></li>
                     <li>Volver a este dashboard</li>
                 </ol>
@@ -43,7 +47,7 @@
             </div>
             <div class="card">
                 <h3>Intensidad Promedio</h3>
-                <span class="numero">{{ indice_prom }} / 10</span>
+                <span class="numero">{{ indice_prom }}<small style="font-size:1rem;color:var(--text-muted)">/10</small></span>
             </div>
             <div class="card alerta">
                 <h3>Alertas Alto Riesgo</h3>
@@ -57,7 +61,7 @@
 
         <!-- ÚLTIMO REPORTE -->
         <section class="info-reporte">
-            <p>📁 Último reporte: <strong>{{ ultimo_reporte }}</strong></p>
+            📁 Último reporte: <strong>{{ ultimo_reporte }}</strong>
         </section>
 
         {% if not sin_datos %}
@@ -91,7 +95,7 @@
                     <tbody>
                         {% for row in tabla %}
                         <tr class="riesgo-{{ row.get('nivel_riesgo_teorico', 'bajo')|lower }}">
-                            <td>{{ row.get('nro_proceso', 'n/a') }}</td>
+                            <td style="font-family:var(--mono);font-size:0.8rem;color:var(--text-muted)">{{ row.get('nro_proceso', 'n/a') }}</td>
                             <td class="detalle-col">{{ row.get('detalle', 'n/a') }}</td>
                             <td>{{ row.get('tipo_decision', 'n/a') }}</td>
                             <td><strong>{{ row.get('indice_fenomeno_corruptivo', 0) }}</strong></td>
@@ -114,7 +118,9 @@
 
     {% if not sin_datos %}
     <script>
-        // Gráfico de tipos
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.borderColor = '#1e2d4a';
+
         const tipoData = {{ tipo_counts | tojson }};
         if (Object.keys(tipoData).length > 0) {
             new Chart(document.getElementById('graficoTipos'), {
@@ -124,14 +130,22 @@
                     datasets: [{
                         label: 'Cantidad',
                         data: Object.values(tipoData),
-                        backgroundColor: ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2'],
+                        backgroundColor: ['#3b82f6','#06b6d4','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899'],
+                        borderRadius: 6,
+                        borderSkipped: false,
                     }]
                 },
-                options: { responsive: true, plugins: { legend: { display: false } } }
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: '#1e2d4a' }, ticks: { color: '#94a3b8' } },
+                        y: { grid: { color: '#1e2d4a' }, ticks: { color: '#94a3b8' } }
+                    }
+                }
             });
         }
 
-        // Gráfico de riesgo
         const riesgoData = {{ riesgo_counts | tojson }};
         if (Object.keys(riesgoData).length > 0) {
             new Chart(document.getElementById('graficoRiesgo'), {
@@ -140,10 +154,21 @@
                     labels: Object.keys(riesgoData),
                     datasets: [{
                         data: Object.values(riesgoData),
-                        backgroundColor: ['#d62728', '#ff7f0e', '#1f77b4'],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6'],
+                        borderWidth: 2,
+                        borderColor: '#131d35',
                     }]
                 },
-                options: { responsive: true }
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#94a3b8', padding: 16, font: { size: 12 } }
+                        }
+                    },
+                    cutout: '65%'
+                }
             });
         }
     </script>

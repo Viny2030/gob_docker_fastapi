@@ -8,20 +8,23 @@
 </head>
 <body>
     <header>
-        <h1>⚖️ Monitor de Fenómenos Corruptivos</h1>
-        <p>Algoritmos contra la Corrupción - Ph.D. Vicente Humberto Monteverde</p>
-        <nav>
-            <a href="/">📊 Dashboard</a>
-            <a href="/analisis-vivo">🚀 Análisis en Vivo</a>
-            <a href="/documentacion" class="active">📖 Documentación</a>
-            <a href="/docs">🔧 API</a>
-        </nav>
+        <div class="header-inner">
+            <div class="header-brand">
+                <h1>⚖️ Monitor XAI <span class="badge">v1.0</span></h1>
+                <p>Ph.D. Vicente Humberto Monteverde · Algoritmos contra la Corrupción</p>
+            </div>
+            <nav>
+                <a href="/">📊 Dashboard</a>
+                <a href="/analisis-vivo">🚀 Análisis en Vivo</a>
+                <a href="/documentacion" class="active">📖 Documentación</a>
+                <a href="/docs">🔧 API</a>
+            </nav>
+        </div>
     </header>
 
     <main>
         <section class="doc-section">
             <h2>📖 Guía de Uso del Monitor XAI</h2>
-
             <div class="doc-grid">
                 <div class="doc-card">
                     <h3>🚀 Operación del Sistema</h3>
@@ -56,9 +59,9 @@
                 <tbody>
                     {% for e in escenarios %}
                     <tr>
-                        <td>{{ e.nombre }}</td>
+                        <td style="color:var(--text-primary);font-weight:500">{{ e.nombre }}</td>
                         <td>{{ e.transferencia }}</td>
-                        <td><strong>{{ e.peso }}</strong></td>
+                        <td><strong style="font-family:var(--mono);color:var(--accent-cyan)">{{ e.peso }}</strong></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -67,9 +70,9 @@
 
         <section class="doc-section referencia">
             <h2>📄 Fundamentación Académica</h2>
-            <p>Esta herramienta implementa la investigación del <strong>Ph.D. Vicente Humberto Monteverde</strong> sobre la <strong>Transferencia Regresiva de Ingresos</strong>.</p>
-            <p><strong>Referencia:</strong> Monteverde, V.H. (2021). "Great corruption - theory of corrupt phenomena", <em>Journal of Financial Crime</em>, Vol. 28 No. 2, pp. 580-592.</p>
-            <p><strong>DOI:</strong> <a href="https://doi.org/10.1108/JFC-03-2020-0054" target="_blank">10.1108/JFC-03-2020-0054</a></p>
+            <p>Esta herramienta implementa la investigación del <strong style="color:var(--text-primary)">Ph.D. Vicente Humberto Monteverde</strong> sobre la <strong style="color:var(--text-primary)">Transferencia Regresiva de Ingresos</strong>.</p>
+            <p><strong style="color:var(--text-secondary)">Referencia:</strong> Monteverde, V.H. (2021). "Great corruption - theory of corrupt phenomena", <em>Journal of Financial Crime</em>, Vol. 28 No. 2, pp. 580-592.</p>
+            <p><strong style="color:var(--text-secondary)">DOI:</strong> <a href="https://doi.org/10.1108/JFC-03-2020-0054" target="_blank">10.1108/JFC-03-2020-0054</a></p>
             <br>
             <a href="/api/descargar-articulo" class="btn-descarga">📥 Descargar Artículo Original (Ph.D. Monteverde)</a>
         </section>
